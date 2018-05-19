@@ -1,0 +1,36 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "1.0.0",
+  "description": "mobile web specialist certification course",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "imagemin": "npm run imagemin:clean && node imagemin.js",
+    "imagemin:clean": "rimraf build/images"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/someyoungideas/mws-restaurant-stage-1.git"
+  },
+  "keywords": [
+    "Udacity",
+    "Mobile",
+    "Web",
+    "Specialist"
+  ],
+  "author": "Chris Young",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/someyoungideas/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/someyoungideas/mws-restaurant-stage-1#readme",
+  "devDependencies": {
+    "imagemin": "^5.3.1",
+    "imagemin-jpeg-recompress": "^5.1.0",
+    "imagemin-webp": "^4.1.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.2",
+    "sharp": "^0.20.2"
+  },
+  "dependencies": {}
+}
