@@ -11,7 +11,7 @@ mkdirp(`${__dirname}/build/images`, (err) => {
 
   fs.readdir(`${__dirname}/img`, (err, files) => {
     files.forEach(file => {
-      const sizes = [800, 400]
+      const sizes = [900, 580]
       const resizePromises = sizes.map(size => {
         const fileName = `${file.slice(0, file.lastIndexOf('.'))}_${size}${file.slice(file.lastIndexOf('.'), file.length)}`
 
