@@ -154,13 +154,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
-  const picture = document.createElement('picture');
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.setAttribute('alt', restaurant.name);
-  picture.append(image);
-  li.append(picture);
+  li.append(createRestaurantPicture(restaurant));
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
@@ -180,6 +174,36 @@ createRestaurantHTML = (restaurant) => {
   li.append(more)
 
   return li
+}
+
+/**
+ * Create restaurant picture element
+ */
+createRestaurantPicture = (restaurant) => {
+  const picture = document.createElement('picture');
+  const image = document.createElement('img');
+  const imageUrl = DBHelper.imageUrlForRestaurant(restaurant);
+  picture.className = 'restaurant-img';
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.setAttribute('alt', restaurant.name);
+  picture.append(createRestaurantSource(imageUrl.replace('jpg', 'webp'), '', 'image/webp'));
+  picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_580' + '.jpg'}`, '(min-width: 580px)', 'image/jpg'));
+  picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_980' + '.jpg'}`, '(min-width: 980px)', 'image/jpg'));
+  picture.append(image);
+
+  return picture;
+}
+
+/**
+ * Creates restaurant source element
+ */
+createRestaurantSource = (srcset, mediaQuery, type) => {
+  const source = document.createElement('source');
+  source.setAttribute('type', type);
+  source.setAttribute('srcset', srcset);
+  source.setAttribute('media', mediaQuery);
+
+  return source;
 }
 
 /**
