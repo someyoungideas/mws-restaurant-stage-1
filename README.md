@@ -25,4 +25,15 @@ In a terminal, check the version of Python you have: `python -V`. If you have Py
 Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
 
 
+### TODO
+- lazy load images
+x PWA manifest
+x PWA theme color 
+x PWA custom splash screen
+- PWA prompt to install web app
+- get JSON from api
+- indexdb JSON
 
+- PWA > 90
+- Performance > 70
+- Accessibility > 90

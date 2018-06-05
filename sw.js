@@ -20,6 +20,8 @@ self.addEventListener('fetch', function(event) {
             if (url.hostname === location.hostname)
               cache.put(event.request, responseToCache);
 
+            console.log(url.port);
+
             return response;
           });
         });

@@ -76,29 +76,6 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 }
 
 /**
- * Initialize Google map, called from HTML.
- */
-window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
-  });
-
-  google.maps.event.addListener(self.map, "tilesloaded", function(){
-    const iframe = document.querySelector('iframe');
-    iframe.setAttribute('title', 'Google Maps');
-  });  
-
-  addMarkersToMap();
-}
-
-/**
  * Update page and map for current restaurants.
  */
 updateRestaurants = () => {
@@ -180,9 +157,9 @@ createRestaurantHTML = (restaurant) => {
 createRestaurantPicture = (restaurant) => {
   const picture = document.createElement('picture');
   const image = document.createElement('img');
-  const imageUrl = DBHelper.imageUrlForRestaurant(restaurant);
+  const imageUrl = `${DBHelper.imageUrlForRestaurant(restaurant)}.jpg`;
   picture.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = imageUrl;
   image.setAttribute('alt', restaurant.name);
   picture.append(createRestaurantSource(imageUrl.replace('jpg', 'webp'), '', 'image/webp'));
   picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_580' + '.jpg'}`, '(min-width: 580px)', 'image/jpg'));
@@ -208,6 +185,8 @@ createRestaurantSource = (srcset, mediaQuery, type) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+  if (!restaurants) return;
+
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
@@ -216,4 +195,26 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+
+/**
+ * Initialize Google map, called from HTML.
+ */
+window.initMap = () => {
+  let loc = {
+    lat: 40.722216,
+    lng: -73.987501
+  };
+
+  self.map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 12,
+    center: loc,
+    scrollwheel: false
+  });
+
+  google.maps.event.addListener(self.map, "tilesloaded", function(){
+    const iframe = document.querySelector('iframe');
+    iframe.setAttribute('title', 'Google Maps');
+    addMarkersToMap();
+  });  
 }
