@@ -3,12 +3,14 @@ let restaurants,
   cuisines
 var map
 var markers = []
+var observer
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
   registerServiceWorker();
+  createObserver();
   fetchNeighborhoods();
   fetchCuisines();
   updateRestaurants();
@@ -18,6 +20,16 @@ registerServiceWorker = function() {
   if ('serviceWorker' in navigator === false) return;
 
   navigator.serviceWorker.register('/sw.js').catch(console.error);
+}
+
+createObserver = function() {
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0
+  };
+
+  observer = new IntersectionObserver(intersectionCb, options);
 }
 
 /**
@@ -156,17 +168,41 @@ createRestaurantHTML = (restaurant) => {
  */
 createRestaurantPicture = (restaurant) => {
   const picture = document.createElement('picture');
-  const image = document.createElement('img');
-  const imageUrl = `${DBHelper.imageUrlForRestaurant(restaurant)}.jpg`;
+  const imageUrl = DBHelper.imageUrlForRestaurant(restaurant);
   picture.className = 'restaurant-img';
-  image.src = imageUrl;
-  image.setAttribute('alt', restaurant.name);
-  picture.append(createRestaurantSource(imageUrl.replace('jpg', 'webp'), '', 'image/webp'));
-  picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_580' + '.jpg'}`, '(min-width: 580px)', 'image/jpg'));
-  picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_980' + '.jpg'}`, '(min-width: 980px)', 'image/jpg'));
-  picture.append(image);
+  picture.setAttribute('data-url', imageUrl);
+  picture.setAttribute('data-restaurant-name', restaurant.name);
+
+  if (observer)
+    observer.observe(picture);
 
   return picture;
+}
+
+/**
+ * Handles intersection observer callback for pictures
+ */
+intersectionCb = (entries, observer) => {
+  entries.forEach(entry => {
+    const picture = entry.target;
+
+    if (!entry.isIntersecting || picture.querySelector('img') !== null)
+      return
+
+    const imageUrl = picture.getAttribute('data-url');
+    const restaurantName = picture.getAttribute('data-restaurant-name');
+
+    if (imageUrl === null || restaurantName === null)
+      return;
+
+    const image = document.createElement('img');
+    
+    picture.append(createRestaurantSource(imageUrl.replace('jpg', 'webp'), '', 'image/webp'));
+    picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_580' + '.jpg'}`, '(min-width: 580px)', 'image/jpg'));
+    picture.append(createRestaurantSource(`${imageUrl.slice(0, imageUrl.lastIndexOf('.')) + '_980' + '.jpg'}`, '(min-width: 980px)', 'image/jpg'));
+    picture.append(image);
+    image.setAttribute('alt', restaurantName);
+  });
 }
 
 /**

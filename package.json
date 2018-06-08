@@ -5,12 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run build:clean && minify ./node_modules/whatwg-fetch/fetch.js -d ./build/vendor/ && minify ./node_modules/promise-polyfill/dist/polyfill.min.js -d ./build/vendor/ && minify ./node_modules/idb/lib/idb.js -d ./build/vendor/",
-    "build:clean": "rimraf ./build/vendor",
-    "js": "npm run js:clean && minify js -d build/js",
+    "build": "npm run build:css && npm run js:clean && npm run build:vendor && npm run build:js && npm run js:minify",
+    "build:js": "npm run js:concat && minify ./js/build.js -d ./build/js",
+    "build:vendor": "npm run vendor:concat && minify ./js/vendor.js -d ./build/js",
+    "build:css": "npm run css:clean && npm run css:styles && npm run css:restaurantstyles",
+
+    "vendor:concat": "concat -o ./js/vendor.js ./node_modules/idb/lib/idb.js ./node_modules/whatwg-fetch/fetch.js ./node_modules/promise-polyfill/dist/polyfill.min.js ./node_modules/intersection-observer/intersection-observer.js",
+
+    "js:concat": "concat -o ./js/build.js ./js/dbhelper.js ./js/main.js",
+    "js:minify": "minify ./js/restaurant_info.js -d ./build/js && minify ./js/main.js -d ./build/js && minify ./js/dbhelper.js -d ./build/js && minify ./js/restaurant_info.js -d ./build/js",
     "js:clean": "rimraf build/js",
-    "css": "npm run css:clean && postcss css/styles.css -u cssnano autoprefixer --autoprefixer.browsers \"> 5%\" -o build/css/styles.css",
+
+    "css:styles": "postcss css/styles.css -u cssnano autoprefixer --autoprefixer.browsers \"> 5%\" -o build/css/styles.css",
+    "css:restaurantstyles": "postcss css/restaurant-styles.css -u cssnano autoprefixer --autoprefixer.browsers \"> 5%\" -o build/css/restaurant-styles.css",
     "css:clean": "rimraf build/css",
+
     "imagemin": "npm run imagemin:clean && node imagemin.js",
     "imagemin:clean": "rimraf build/images"
   },
@@ -33,6 +42,7 @@
   "devDependencies": {
     "autoprefixer": "^8.5.1",
     "babel-minify": "^0.4.3",
+    "concat": "^1.0.3",
     "cssnano": "^3.10.0",
     "imagemin": "^5.3.1",
     "imagemin-jpeg-recompress": "^5.1.0",
@@ -45,8 +55,8 @@
   },
   "dependencies": {
     "idb": "^2.1.2",
+    "intersection-observer": "^0.5.0",
     "promise-polyfill": "^8.0.0",
-    "uglify-js": "^3.3.27",
     "whatwg-fetch": "^2.0.4"
   }
 }

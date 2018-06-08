@@ -17,11 +17,74 @@
   <meta property="og:title" content="Restaurant" />
   <meta property="og:description" content="View this restaurant's location, hours of operation, and reviews" />
   
+  <title>Restaurant Info</title>
+
+  <style type="text/css">
+    body,td,th,p{
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #333;
+      line-height: 1.5;
+    }
+    body {
+      margin: 0;
+      position:relative;
+      background-color: #fdfdfd;
+    }
+    ul, li {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #333;
+    }
+    a {
+      color: #a5453a;
+      text-decoration: none;
+    }
+    a:hover, a:focus {
+      color: #3397db;
+      text-decoration: none;
+    }
+    a img{
+      border: none 0 #fff;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin: 0 0 1em;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+      display: block;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 6em;
+      background-color: #252831;
+      text-align:center;
+    }
+    nav h1 {
+      margin: 0;
+    }
+    nav h1 a {
+      color: #fff;
+      font-size: 14pt;
+      font-weight: 200;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+    }
+    #maincontent {
+      background-color: #f3f3f3;
+    }
+  </style>
   <!-- Normalize.css for better cross-browser consistency -->
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <!-- Main CSS file -->
   <link rel="stylesheet" href="build/css/styles.css" type="text/css">
-  <title>Restaurant Info</title>
+  <link rel="stylesheet" href="build/css/restaurant-styles.css" type="text/css">
 </head>
 
 <body class="inside">
@@ -70,13 +133,10 @@
   </footer>
   <!-- End footer -->
 
-  <script type="application/javascript" charset="utf-8" src="build/vendor/polyfill.min.js"></script>
-  <script type="application/javascript" charset="utf-8" src="build/vendor/fetch.js"></script>
-  <script type="application/javascript" charset="utf-8" src="build/vendor/idb.js"></script>
   <!-- Beginning scripts -->
+  <script type="application/javascript" charset="utf-8" src="build/js/vendor.js"></script>
   <!-- Database helpers -->
-  <script type="text/javascript" src="build/js/dbhelper.js"></script>
-  <!-- Main javascript file -->
+  <script type="application/javascript" charset="utf-8" src="build/js/dbhelper.js"></script>
   <script type="text/javascript" src="build/js/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCChce1iJSTe7mxEmN-OG9CpH1bxWXs-SI&libraries=places&callback=initMap"></script>

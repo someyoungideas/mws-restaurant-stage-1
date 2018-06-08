@@ -2,7 +2,6 @@
  * Common database helper functions.
  */
 class DBHelper {
-
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
@@ -20,7 +19,16 @@ class DBHelper {
     }).catch(console.error);
   }
 
-  static saveDbRestaurants(restaurants) {
+  static getRestaurants() {
+    return DBHelper.openDatabase().then(db => {
+      const tx = db.transaction('restaurants', 'readwrite');
+      const store = tx.objectStore('restaurants');
+
+      return store.getAll();
+    }).catch(console.error)
+  }
+
+  static updateRestaurants(restaurants) {
     return DBHelper.openDatabase().then(db => {
       const tx = db.transaction('restaurants', 'readwrite');
       const store = tx.objectStore('restaurants');
@@ -37,8 +45,15 @@ class DBHelper {
   static fetchRestaurants(callback) {
     const request = new Request(DBHelper.DATABASE_URL);
 
-    return fetch(request).then(r => r.json()).then(restaurants => {
-      return DBHelper.saveDbRestaurants(restaurants);
+    return DBHelper.getRestaurants().then(restaurants => {
+      return fetch(request).then(r => r.json())
+        .then(restaurants => {
+          return DBHelper.updateRestaurants(restaurants);
+        })
+        .catch(err => {
+          console.error(err);
+          return restaurants;
+        });
     }).then(restaurants => {
       return callback(null, restaurants);
     }).catch(e => callback(e, null));
@@ -163,7 +178,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/build/images/${restaurant.photograph}`);
+    return (`/build/images/${restaurant.photograph}.jpg`);
   }
 
   /**
