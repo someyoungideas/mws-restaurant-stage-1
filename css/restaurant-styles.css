@@ -1,0 +1,133 @@
+@charset "utf-8";
+/* CSS Document */
+
+#breadcrumb {
+  display: flex;
+  align-items: center;
+  width: 100vw;
+  height: 4em;
+  margin: 0;
+  padding: 1em;
+  list-style: none;
+  background-color: #eee;
+  box-sizing: border-box;
+}
+
+/* Display list items side by side */
+#breadcrumb li {
+  display: inline;
+}
+
+/* Add a slash symbol (/) before/behind each list item */
+#breadcrumb li+li:before {
+  content: "/\00a0";
+  padding: 1em;
+  color: black;
+}
+
+/* Add a color to all links inside the list */
+#breadcrumb li a {
+  color: #006cca;
+  text-decoration: none;
+}
+
+/* Add a color on mouse-over */
+#breadcrumb li a:hover {
+  color: #01447e;
+  text-decoration: underline;
+}
+/* ====================== Map ====================== */
+#map {
+  width: 100vw;
+  height: 25em;  
+  background-color: #ccc;
+}
+
+/* ====================== Restaurant Details ====================== */
+.inside header {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+}
+.inside #map-container {
+  background: blue none repeat scroll 0 0;  
+  height: 25em;
+  margin-top: 10em;
+  width: 100vw;
+}
+.inside #map {
+  background-color: #ccc;
+  width: 100vw;
+  height: 100%;
+}
+.inside #footer {
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  box-sizing: border-box;
+}
+#restaurant-name {
+  color: #a5453a;
+  font-family: Arial,sans-serif;
+  font-size: 2em;
+  font-weight: 200;
+  letter-spacing: 0;
+  margin: 1.5em 0;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+#restaurant-address {
+  font-size: 12pt;
+  margin: 1em 0;
+}
+#restaurant-cuisine {
+  padding: 1em;
+  background-color: #333;
+  color: #fff;
+  font-size: 12pt;
+  font-weight: 300;
+  letter-spacing: 1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+#restaurant-container, #reviews-container {
+  border-bottom: 1px solid #d9d9d9;
+  border-top: 1px solid #fff;
+  padding: 1em;
+  width: 100vw;
+  box-sizing: border-box;
+}
+#reviews-container {
+  padding: 1em;
+}
+#reviews-container h2 {
+  color: #a5453a;
+  font-size: 1.75em;
+  font-weight: 300;
+  letter-spacing: -1px;
+  padding-bottom: 1pt;
+}
+#reviews-list {
+  margin: 0 0 6em;
+  padding: 0;
+}
+#reviews-list li {
+  background-color: #fff;
+  border: 2px solid #f3f3f3;
+  display: block;
+  list-style-type: none;
+  margin: 1em 0;
+  overflow: hidden;
+  padding: .5em;
+  position: relative;
+}
+#reviews-list li:first-of-type,
+#reviews-list li:last-of-type {
+  margin: 0;
+}
+#reviews-list li p {
+  margin: 0 0 1em;
+}
+#restaurant-hours td {
+  color: #666;
+}
