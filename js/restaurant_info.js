@@ -36,7 +36,9 @@ fetchRestaurantFromURL = (callback) => {
     callback(null, self.restaurant)
     return;
   }
+
   const id = getParameterByName('id');
+
   if (!id) { // no id found in URL
     error = 'No restaurant id in URL'
     callback(error, null);
@@ -48,9 +50,22 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
+      setupFavoriteButton(document.getElementById('restaurant-favorite'), id);
       callback(null, restaurant)
     });
   }
+}
+
+/**
+ * Set up favorite button event listener
+ */
+setupFavoriteButton = (favoriteButton, restaurantId) => {
+  if (!favoriteButton)
+    return console.error('Could not find favorite button.');
+
+  favoriteButton.addEventListener('click', _ => {
+    console.log(`restaurant id: ${restaurantId}`);
+  });
 }
 
 /**
@@ -105,8 +120,12 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
+  const addReviewButton = document.createElement('button');
   title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  addReviewButton.innerHTML = 'Add Review';
+  addReviewButton.addEventListener('click', _ => createReviewFormHTML(addReviewButton));
+  container.insertBefore(addReviewButton, container.firstChild);
+  container.insertBefore(title, container.firstChild);
 
   if (!reviews) {
     const noReviews = document.createElement('p');
@@ -114,6 +133,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     container.appendChild(noReviews);
     return;
   }
+
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
@@ -143,6 +163,54 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
+}
+
+/**
+ * Create review form HTML and add it to the webpage.
+ */
+createReviewFormHTML = (reviewButton) => {
+  if (!reviewButton)
+    return console.error('Could not find button to add reviews');
+
+  const reviewForm = document.createElement('form');
+  const commentLabel = document.createElement('label');
+  const commentInput = document.createElement('textarea');
+  const cancelButton = document.createElement('button');
+  const submitButton = document.createElement('button');
+
+  cancelButton.addEventListener('click', _ => reviewForm.parentNode.removeChild(reviewForm))
+
+  reviewForm.id = 'review-form';
+  commentLabel.innerHTML = 'Your Review';
+  cancelButton.innerHTML = 'Cancel';
+  cancelButton.setAttribute('type', 'button');
+  submitButton.innerHTML = 'Submit Review';
+  submitButton.setAttribute('type', 'submit');
+
+  createReviewFormInput(reviewForm, 'Your Name');
+  createReviewFormInput(reviewForm, 'Your Rating');
+  reviewForm.appendChild(commentLabel);
+  reviewForm.appendChild(commentInput);
+  reviewForm.appendChild(cancelButton);
+  reviewForm.appendChild(submitButton);
+  reviewButton.parentNode.insertBefore(reviewForm, reviewButton.nextSibling);
+  reviewForm.querySelector('input').focus();
+}
+
+/**
+ *
+ */
+createReviewFormInput = (formElement, labelText) => {
+  if (!formElement)
+    return console.error('Could not find form element to create input.');
+
+  const label = document.createElement('label');
+  const input = document.createElement('input');
+
+  label.innerHTML = labelText;
+
+  formElement.appendChild(label);
+  formElement.appendChild(input);
 }
 
 /**

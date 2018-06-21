@@ -79,6 +79,7 @@
     }
     #maincontent {
       background-color: #f3f3f3;
+      padding-bottom: 5em;
     }
   </style>
   <!-- Normalize.css for better cross-browser consistency -->
@@ -115,14 +116,13 @@
       <h1 id="restaurant-name"></h1>
       <img id="restaurant-img">
       <p id="restaurant-cuisine"></p>
+      <button id="restaurant-favorite">Favorite &#10084;</button>
       <p id="restaurant-address"></p>
       <table id="restaurant-hours"></table>
     </section>
     <!-- end restaurant -->
     <!-- Beginning reviews -->
-    <section id="reviews-container">
-      <ul id="reviews-list"></ul>
-    </section>
+    <section id="reviews-container"></section>
     <!-- End reviews -->
   </main>
   <!-- End main -->
@@ -137,7 +137,7 @@
   <script type="application/javascript" charset="utf-8" src="build/js/vendor.js"></script>
   <!-- Database helpers -->
   <script type="application/javascript" charset="utf-8" src="build/js/dbhelper.js"></script>
-  <script type="text/javascript" src="build/js/restaurant_info.js"></script>
+  <script type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCChce1iJSTe7mxEmN-OG9CpH1bxWXs-SI&libraries=places&callback=initMap"></script>
   <!-- End scripts -->
