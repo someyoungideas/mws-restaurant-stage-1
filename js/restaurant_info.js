@@ -50,7 +50,7 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
-      setupFavoriteButton(document.getElementById('restaurant-favorite'), id);
+      setupFavoriteButton(document.getElementById('restaurant-favorite'), restaurant);
       callback(null, restaurant)
     });
   }
@@ -59,12 +59,16 @@ fetchRestaurantFromURL = (callback) => {
 /**
  * Set up favorite button event listener
  */
-setupFavoriteButton = (favoriteButton, restaurantId) => {
+setupFavoriteButton = (favoriteButton, restaurant) => {
   if (!favoriteButton)
     return console.error('Could not find favorite button.');
 
+  favoriteButton.setAttribute('data-favorite', restaurant.is_favorite);
   favoriteButton.addEventListener('click', _ => {
-    console.log(`restaurant id: ${restaurantId}`);
+    restaurant.is_favorite = favoriteButton.getAttribute('data-favorite') === 'true' ? false : true;
+    DBHelper.updateRestaurant(restaurant, (error, updatedRestaurant) => {
+      favoriteButton.setAttribute('data-favorite', updatedRestaurant.is_favorite)
+    });
   });
 }
 

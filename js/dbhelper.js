@@ -39,6 +39,17 @@ class DBHelper {
     }).catch(console.error);
   }
 
+  static updateRestaurantObjectStore(restaurant) {
+    return DBHelper.openDatabase().then(db => {
+      const tx = db.transaction('restaurants', 'readwrite');
+      const store = tx.objectStore('restaurants');
+
+      store.put(restaurant);
+      tx.complete;
+      return restaurant;
+    }).catch(console.error);
+  }
+
   /**
    * Fetch all restaurants.
    */
@@ -164,6 +175,23 @@ class DBHelper {
         const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i)
         callback(null, uniqueCuisines);
       }
+    });
+  }
+
+  /**
+   *
+   */
+  static updateRestaurant(restaurant, callback) {
+    const request = new Request(`${DBHelper.DATABASE_URL}/${restaurant.id}/?is_favorite=${restaurant.is_favorite}`);
+    const init = {
+      method: 'PUT'
+    };
+
+    DBHelper.updateRestaurantObjectStore(restaurant).then(_ => {
+      fetch(request, init).then(r => r.json()).then(updatedRestaurant => {
+        return callback(null, updatedRestaurant);
+      })
+      .catch(e => callback(e, null));
     });
   }
 
