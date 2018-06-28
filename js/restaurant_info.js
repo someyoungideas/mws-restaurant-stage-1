@@ -49,9 +49,13 @@ fetchRestaurantFromURL = (callback) => {
         console.error(error);
         return;
       }
-      fillRestaurantHTML();
-      setupFavoriteButton(document.getElementById('restaurant-favorite'), restaurant);
-      callback(null, restaurant)
+
+      DBHelper.fetchReviewsByRestaurantId(id, (err, reviews) => {
+        self.restaurant.reviews = reviews;
+        fillRestaurantHTML();
+        setupFavoriteButton(document.getElementById('restaurant-favorite'), restaurant);
+        callback(null, restaurant)
+      });
     });
   }
 }
@@ -96,6 +100,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+  setupAddReviewButton(restaurant.id, document.getElementById('add-review'));
 }
 
 /**
@@ -127,7 +132,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const addReviewButton = document.createElement('button');
   title.innerHTML = 'Reviews';
   addReviewButton.innerHTML = 'Add Review';
-  addReviewButton.addEventListener('click', _ => createReviewFormHTML(addReviewButton));
+  addReviewButton.id = 'add-review';
   container.insertBefore(addReviewButton, container.firstChild);
   container.insertBefore(title, container.firstChild);
 
@@ -138,11 +143,19 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
 
-  const ul = document.getElementById('reviews-list');
+  const ul = document.createElement('ul');
+  ul.id = 'reviews-list';
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+}
+
+/**
+ * Setup add review event listener
+ */
+setupAddReviewButton = (restaurantId, addReviewButton) => {
+  addReviewButton.addEventListener('click', _ => createReviewFormHTML(restaurantId, addReviewButton));
 }
 
 /**
@@ -155,7 +168,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.createdAt).toLocaleDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -172,7 +185,9 @@ createReviewHTML = (review) => {
 /**
  * Create review form HTML and add it to the webpage.
  */
-createReviewFormHTML = (reviewButton) => {
+createReviewFormHTML = (restaurantId, reviewButton) => {
+  if (document.getElementById('review-form')) return;
+
   if (!reviewButton)
     return console.error('Could not find button to add reviews');
 
@@ -182,7 +197,12 @@ createReviewFormHTML = (reviewButton) => {
   const cancelButton = document.createElement('button');
   const submitButton = document.createElement('button');
 
-  cancelButton.addEventListener('click', _ => reviewForm.parentNode.removeChild(reviewForm))
+  cancelButton.addEventListener('click', _ => reviewForm.parentNode.removeChild(reviewForm));
+  reviewForm.addEventListener('submit', ev => {
+    ev.preventDefault();
+    submitReview(restaurantId, reviewForm);
+  });
+
 
   reviewForm.id = 'review-form';
   commentLabel.innerHTML = 'Your Review';
@@ -191,8 +211,8 @@ createReviewFormHTML = (reviewButton) => {
   submitButton.innerHTML = 'Submit Review';
   submitButton.setAttribute('type', 'submit');
 
-  createReviewFormInput(reviewForm, 'Your Name');
-  createReviewFormInput(reviewForm, 'Your Rating');
+  createReviewFormInput(reviewForm, 'name', 'Your Name');
+  createReviewFormInput(reviewForm, 'rating', 'Your Rating');
   reviewForm.appendChild(commentLabel);
   reviewForm.appendChild(commentInput);
   reviewForm.appendChild(cancelButton);
@@ -204,7 +224,19 @@ createReviewFormHTML = (reviewButton) => {
 /**
  *
  */
-createReviewFormInput = (formElement, labelText) => {
+submitReview = (restaurantId, reviewForm) => {
+  const formData = new FormData(reviewForm);
+
+  formData.set('restaurant_id', restaurantId);
+  DBHelper.submitReview(formData, (error, review) => {
+    createReviewHTML(review);
+  });
+}
+
+/**
+ * Create review form input element with corresponding label
+ */
+createReviewFormInput = (formElement, id, labelText) => {
   if (!formElement)
     return console.error('Could not find form element to create input.');
 
@@ -212,6 +244,9 @@ createReviewFormInput = (formElement, labelText) => {
   const input = document.createElement('input');
 
   label.innerHTML = labelText;
+  label.setAttribute('for', id);
+  input.id = id;
+  input.name = id;
 
   formElement.appendChild(label);
   formElement.appendChild(input);

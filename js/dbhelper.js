@@ -3,12 +3,26 @@
  */
 class DBHelper {
   /**
+   * Server port
+   * Change this to your server port
+   */
+  static get port() {
+    return 1337;
+  }
+
+  /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${DBHelper.port}/restaurants`;
+  }
+
+  /**
+   * Database URL.
+   */
+  static get REVIEWS_DATABASE_URL() {
+    return `http://localhost:${DBHelper.port}/reviews`;
   }
 
   static openDatabase() {
@@ -71,6 +85,18 @@ class DBHelper {
   }
 
   /**
+   * Fetch all reviews.
+   */
+  static fetchReviews(callback) {
+    const request = new Request(DBHelper.REVIEWS_DATABASE_URL);
+
+    return fetch(request).then(r => r.json())
+      .then(reviews => {
+        return callback(null, reviews);
+      });
+  }
+
+  /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
@@ -84,6 +110,24 @@ class DBHelper {
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
           callback('Restaurant does not exist', null);
+        }
+      }
+    });
+  }
+
+  /**
+   * Fetch a review by its ID.
+   */
+  static fetchReviewsByRestaurantId(id, callback) {
+    DBHelper.fetchReviews((error, reviews) => {
+      if (error)
+        callback(error, null);
+      else {
+        const restaurantReviews = reviews.filter(r => r.restaurant_id == id);
+        if (restaurantReviews) {
+          callback(null, restaurantReviews);
+        } else {
+          callback('Reviews for restaurant does not exist', null);
         }
       }
     });
@@ -179,7 +223,7 @@ class DBHelper {
   }
 
   /**
-   *
+   * Updates restaurant with proper error handling.
    */
   static updateRestaurant(restaurant, callback) {
     const request = new Request(`${DBHelper.DATABASE_URL}/${restaurant.id}/?is_favorite=${restaurant.is_favorite}`);
@@ -191,8 +235,27 @@ class DBHelper {
       fetch(request, init).then(r => r.json()).then(updatedRestaurant => {
         return callback(null, updatedRestaurant);
       })
-      .catch(e => callback(e, null));
+      .catch(error => callback(error, null));
     });
+  }
+
+  /**
+   * Create restaurant review with proper error handling.
+   */
+  static submitReview(review) {
+    const request = new Request(`${DBHelper.REVIEWS_DATABASE_URL}`);
+    const init = {
+      method: 'POST',
+      body: review,
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+      }
+    };
+
+    fetch(request, init).then(r => r.json()).then(createdReview => {
+      callback(null, createdReview);
+    })
+    .catch(error => callback(error, null));
   }
 
   /**
