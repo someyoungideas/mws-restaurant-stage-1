@@ -26,10 +26,11 @@ class DBHelper {
   }
 
   static openDatabase() {
-    return idb.open('restaurantreviews', 1, upgradeDb => {
-      return upgradeDb.createObjectStore('restaurants', {
-        keyPath: 'id'
-      });
+    return idb.open('restaurantreviews', 2, upgradeDb => {
+      const reviews = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+
+      reviews.createIndex('restaurant_id', 'restaurant_id');
+      return upgradeDb.createObjectStore('restaurants', { keyPath: 'id' }); 
     }).catch(console.error);
   }
 
@@ -42,6 +43,15 @@ class DBHelper {
     }).catch(console.error)
   }
 
+  static getReviews() {
+    return DBHelper.openDatabase().then(db => {
+      const tx = db.transaction('reviews', 'readwrite');
+      const store = tx.objectStore('reviews');
+
+      return store.getAll();
+    }).catch(console.error);
+  }
+
   static updateRestaurants(restaurants) {
     return DBHelper.openDatabase().then(db => {
       const tx = db.transaction('restaurants', 'readwrite');
@@ -50,6 +60,17 @@ class DBHelper {
       restaurants.forEach(r => store.put(r));
       tx.complete;
       return restaurants;
+    }).catch(console.error);
+  }
+
+  static updateReviews(reviews) {
+    return DBHelper.openDatabase().then(db => {
+      const tx = db.transaction('reviews', 'readwrite');
+      const store = tx.objectStore('reviews');
+
+      reviews.forEach(r => store.put(r));
+      tx.complete;
+      return reviews;
     }).catch(console.error);
   }
 
@@ -72,8 +93,8 @@ class DBHelper {
 
     return DBHelper.getRestaurants().then(restaurants => {
       return fetch(request).then(r => r.json())
-        .then(restaurants => {
-          return DBHelper.updateRestaurants(restaurants);
+        .then(serverRestaurants => {
+          return DBHelper.updateRestaurants(serverRestaurants);
         })
         .catch(err => {
           console.error(err);
@@ -90,10 +111,18 @@ class DBHelper {
   static fetchReviews(callback) {
     const request = new Request(DBHelper.REVIEWS_DATABASE_URL);
 
-    return fetch(request).then(r => r.json())
-      .then(reviews => {
-        return callback(null, reviews);
-      });
+    return DBHelper.getReviews().then(reviews => {
+      return fetch(request).then(r => r.json())
+        .then(serverReviews => {
+          return DBHelper.updateReviews(serverReviews);
+        })
+        .catch(err => {
+          console.error(err);
+          return reviews;
+        });
+    }).then(reviews => {
+      return callback(null, reviews);
+    }).catch(e => callback(e, null));
   }
 
   /**
