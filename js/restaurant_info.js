@@ -206,6 +206,9 @@ createReviewFormHTML = (restaurantId, reviewButton) => {
 
   reviewForm.id = 'review-form';
   commentLabel.innerHTML = 'Your Review';
+  commentLabel.setAttribute('for', 'comments');
+  commentInput.id = 'comments';
+  commentInput.name = 'comments';
   cancelButton.innerHTML = 'Cancel';
   cancelButton.setAttribute('type', 'button');
   submitButton.innerHTML = 'Submit Review';
@@ -222,15 +225,36 @@ createReviewFormHTML = (restaurantId, reviewButton) => {
 }
 
 /**
- *
+ * Submit review
  */
 submitReview = (restaurantId, reviewForm) => {
   const formData = new FormData(reviewForm);
+  const reviewJSON = getFormDataJSON(formData);
 
-  formData.set('restaurant_id', restaurantId);
-  DBHelper.submitReview(formData, (error, review) => {
-    createReviewHTML(review);
+  reviewJSON.restaurant_id = restaurantId;
+  DBHelper.submitReview(reviewJSON, (error, review) => {
+    reviewForm.parentElement.removeChild(reviewForm);
+
+    const reviewsListElement = document.getElementById('reviews-list');
+
+    if (reviewsListElement === null) return;
+
+    reviewJSON.createdAt = new Date(review.createdAt).getTime();
+    reviewsListElement.appendChild(createReviewHTML(reviewJSON));
   });
+}
+
+/**
+ * Converts form data to JSON
+ */
+getFormDataJSON =(formData) => {
+  let jsonObject = {};
+
+  for (const [key, value]  of formData.entries()) {
+      jsonObject[key] = value;
+  }
+
+  return jsonObject;
 }
 
 /**

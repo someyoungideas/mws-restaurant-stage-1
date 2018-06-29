@@ -27,7 +27,7 @@ class DBHelper {
 
   static openDatabase() {
     return idb.open('restaurantreviews', 2, upgradeDb => {
-      const reviews = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+      const reviews = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
 
       reviews.createIndex('restaurant_id', 'restaurant_id');
       return upgradeDb.createObjectStore('restaurants', { keyPath: 'id' }); 
@@ -82,6 +82,17 @@ class DBHelper {
       store.put(restaurant);
       tx.complete;
       return restaurant;
+    }).catch(console.error);
+  }
+
+  static updateReview(review) {
+    return DBHelper.openDatabase().then(db => {
+      const tx = db.transaction('reviews', 'readwrite');
+      const store = tx.objectStore('reviews');
+
+      store.put(review);
+      tx.complete;
+      return review;
     }).catch(console.error);
   }
 
@@ -271,20 +282,22 @@ class DBHelper {
   /**
    * Create restaurant review with proper error handling.
    */
-  static submitReview(review) {
+  static submitReview(review, callback) {
     const request = new Request(`${DBHelper.REVIEWS_DATABASE_URL}`);
     const init = {
       method: 'POST',
       body: review,
       headers:{
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        'Content-Type': 'application/json'
       }
     };
 
-    fetch(request, init).then(r => r.json()).then(createdReview => {
-      callback(null, createdReview);
-    })
-    .catch(error => callback(error, null));
+    DBHelper.updateReview(review).then(_ => {
+      fetch(request, init).then(r => r.json()).then(createdReview => {
+        callback(null, createdReview);
+      })
+      .catch(error => callback(error, null));
+    });
   }
 
   /**
