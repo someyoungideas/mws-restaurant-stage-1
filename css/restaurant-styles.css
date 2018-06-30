@@ -66,6 +66,37 @@
   width: 100vw;
   box-sizing: border-box;
 }
+#restaurant-favorite,
+#add-review,
+#review-form button {
+  width: 100%;
+  padding: 1em;
+  background-color: #f3f3f3;
+  color: #333;
+  font-size: 12pt;
+  font-weight: 300;
+  letter-spacing: 1em;
+  border: 2px solid #333;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+}
+#add-review:hover,
+#add-review:focus,
+#add-review:active,
+#restaurant-favorite:hover,
+#restaurant-favorite:focus,
+#restaurant-favorite:active,
+#review-form button:hover,
+#review-form button:focus,
+#review-form button:active {
+  text-decoration: underline;
+}
+#restaurant-favorite[data-favorite="true"] {
+  background-color: #a5453a;
+  color: #fff;
+  border: 2px solid #a5453a;
+}
 #restaurant-name {
   color: #a5453a;
   font-family: Arial,sans-serif;
@@ -90,6 +121,20 @@
   text-align: center;
   text-transform: uppercase;
 }
+#review-form {
+  max-width: 30em;
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+}
+#review-form label,
+#review-form button {
+  margin-top: .5em;
+}
+#review-form textarea {
+  height: 6em;
+  resize: none;
+}
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
@@ -108,7 +153,7 @@
   padding-bottom: 1pt;
 }
 #reviews-list {
-  margin: 0 0 6em;
+  margin: 1em 0 6em;
   padding: 0;
 }
 #reviews-list li {
