@@ -296,7 +296,7 @@ class DBHelper {
       fetch(request, init).then(r => r.json()).then(createdReview => {
         callback(null, createdReview);
       })
-      .catch(error => callback(error, null));
+      .catch(error => callback(error, review));
     });
   }
 

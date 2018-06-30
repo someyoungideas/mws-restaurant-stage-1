@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.error(error);
     } else {
       fillBreadcrumb();
+      window.addEventListener('online',  handleConnectivityStatus);
+      window.addEventListener('offline', handleConnectivityStatus);
     }
   });
 });
@@ -26,6 +28,26 @@ window.initMap = () => {
     iframe.setAttribute('title', 'Google Maps');
     DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
   });  
+}
+
+/**
+ * Adds event listener to offline and online window events
+ */
+handleConnectivityStatus = () => {
+  const condition = navigator.onLine ? "online" : "offline";
+
+  if (!navigator.onLine) return;
+
+  DBHelper.getReviews().then(reviews => {
+    const offlineReviews = reviews.filter(review => review.offline);
+
+    offlineReviews.forEach(review => {
+      DBHelper.submitReview(review, (err, submittedReview) => {
+        if (err)
+          console.error(err);
+      });
+    });
+  }).catch(console.error);
 }
 
 /**
@@ -231,15 +253,21 @@ submitReview = (restaurantId, reviewForm) => {
   const formData = new FormData(reviewForm);
   const reviewJSON = getFormDataJSON(formData);
 
+  if (!navigator.onLine)
+    reviewJSON.offline = true;
+
   reviewJSON.restaurant_id = restaurantId;
   DBHelper.submitReview(reviewJSON, (error, review) => {
+    if (error)
+      console.error(error);
+
     reviewForm.parentElement.removeChild(reviewForm);
 
     const reviewsListElement = document.getElementById('reviews-list');
 
     if (reviewsListElement === null) return;
 
-    reviewJSON.createdAt = new Date(review.createdAt).getTime();
+    reviewJSON.createdAt = review.createdAt ? new Date(review.createdAt).getTime() : new Date().getTime();
     reviewsListElement.appendChild(createReviewHTML(reviewJSON));
   });
 }
