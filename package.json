@@ -9,17 +9,13 @@
     "build:js": "npm run js:concat && minify ./js/build.js -d ./build/js",
     "build:vendor": "npm run vendor:concat && minify ./js/vendor.js -d ./build/js",
     "build:css": "npm run css:clean && npm run css:styles && npm run css:restaurantstyles",
-
     "vendor:concat": "concat -o ./js/vendor.js ./node_modules/idb/lib/idb.js ./node_modules/whatwg-fetch/fetch.js ./node_modules/promise-polyfill/dist/polyfill.min.js ./node_modules/intersection-observer/intersection-observer.js",
-
     "js:concat": "concat -o ./js/build.js ./js/dbhelper.js ./js/main.js",
-    "js:minify": "minify ./js/restaurant_info.js -d ./build/js && minify ./js/main.js -d ./build/js && minify ./js/dbhelper.js -d ./build/js && minify ./js/restaurant_info.js -d ./build/js",
+    "js:minify": "minify ./js/restaurant_info.js -d ./build/js && minify ./js/main.js -d ./build/js && minify ./js/dbhelper.js -d ./build/js && minify ./js/restaurant_info.js -d ./build/js && minify ./js/map.js -d ./build/js",
     "js:clean": "rimraf build/js",
-
     "css:styles": "postcss css/styles.css -u cssnano autoprefixer --autoprefixer.browsers \"> 5%\" -o build/css/styles.css",
     "css:restaurantstyles": "postcss css/restaurant-styles.css -u cssnano autoprefixer --autoprefixer.browsers \"> 5%\" -o build/css/restaurant-styles.css",
     "css:clean": "rimraf build/css",
-
     "imagemin": "npm run imagemin:clean && node imagemin.js",
     "imagemin:clean": "rimraf build/images"
   },

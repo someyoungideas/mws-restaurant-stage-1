@@ -73,7 +73,6 @@
   </style>
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="stylesheet" href="build/css/styles.css">
-  <script src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
@@ -104,9 +103,11 @@
     </section>
   </main>
 
-  <script type="application/javascript" charset="utf-8" src="build/js/vendor.js"></script>
-  <script type="application/javascript" charset="utf-8" src="build/js/dbhelper.js"></script>
-  <script type="application/javascript" charset="utf-8" src="build/js/main.js"></script>
+  <script type="application/javascript" charset="utf-8" src="build/js/vendor.js" defer></script>
+  <script type="application/javascript" charset="utf-8" src="build/js/dbhelper.js" defer></script>
+  <script type="application/javascript" charset="utf-8" src="build/js/main.js" defer></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js' async></script>
+  <script type="application/javascript" charset="utf-8" src="build/js/map.js" async></script>
   </script>
 
   <footer id="footer">

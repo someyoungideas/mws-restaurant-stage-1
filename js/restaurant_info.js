@@ -2,69 +2,16 @@ let restaurant;
 var map;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  registerServiceWorker();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
       fillBreadcrumb();
-      setupMap();
       window.addEventListener('online',  handleConnectivityStatus);
       window.addEventListener('offline', handleConnectivityStatus);
     }
   });
 });
-
-/**
- * Initialize mapbox map
- */
-setupMap = (restaurant = self.restaurant) => {
-  if (!restaurant)
-    return;
-  
-  mapboxgl.accessToken = 'pk.eyJ1Ijoic29tZXlvdW5naWRlYXMiLCJhIjoiY2pqMng2MWNpMTJkdTNqbndwbHZiZWQzcSJ9.HEIqaHAJmmakTeGbr6OK4A';
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v10',
-    center: [restaurant.latlng.lng, restaurant.latlng.lat],
-    zoom: 9
-  });
-
-  map.on('load', () => {
-    addMarkerToMap(map);
-  });
-}
-
-/**
- * Add markers for current restaurants to the map.
- */
-addMarkerToMap = (map) => {
-  const geoJSON = {
-    type: 'FeatureCollection',
-    features: [DBHelper.geoJsonRestaurantPoint(self.restaurant)]
-  };
-
-  geoJSON.features.forEach(function(marker) {
-
-    // create a HTML element for each feature
-    var el = document.createElement('div');
-    el.className = 'marker';
-
-    // make a marker for each feature and add to the map
-    new mapboxgl.Marker(el)
-    .setLngLat(marker.geometry.coordinates)
-    .addTo(map);
-  });
-}
-
-/**
- * Registers service worker
- */
-registerServiceWorker = function() {
-  if ('serviceWorker' in navigator === false) return;
-
-  navigator.serviceWorker.register('/sw.js').catch(console.error);
-}
 
 /**
  * Adds event listener to offline and online window events
