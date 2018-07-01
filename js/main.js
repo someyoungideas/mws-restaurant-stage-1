@@ -11,6 +11,7 @@ var observer
 document.addEventListener('DOMContentLoaded', (event) => {
   registerServiceWorker();
   createObserver();
+  setupMap();
   fetchNeighborhoods();
   fetchCuisines();
   updateRestaurants();
@@ -158,6 +159,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute('role', 'button');
   li.append(more)
 
   return li
@@ -220,37 +222,44 @@ createRestaurantSource = (srcset, mediaQuery, type) => {
 /**
  * Add markers for current restaurants to the map.
  */
-addMarkersToMap = (restaurants = self.restaurants) => {
-  if (!restaurants) return;
+addMarkersToMap = (map) => {
+  const geoJSON = createGeoJSON();
 
-  restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
+  geoJSON.features.forEach(function(marker) {
+
+    // create a HTML element for each feature
+    var el = document.createElement('div');
+    el.className = 'marker';
+
+    // make a marker for each feature and add to the map
+    new mapboxgl.Marker(el).setLngLat(marker.geometry.coordinates).addTo(map);
   });
 }
 
-/**
- * Initialize Google map, called from HTML.
- */
-window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
+createGeoJSON = (restaurants = self.restaurants) => {
+  if (!restaurants) return;
 
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
+  const restaurantsFeaturesJSON = restaurants.map(DBHelper.geoJsonRestaurantPoint);
+
+  return {
+    type: 'FeatureCollection',
+    features: restaurantsFeaturesJSON
+  };
+}
+
+/**
+ * Initialize mapbox map
+ */
+setupMap = () => {
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic29tZXlvdW5naWRlYXMiLCJhIjoiY2pqMng2MWNpMTJkdTNqbndwbHZiZWQzcSJ9.HEIqaHAJmmakTeGbr6OK4A';
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v10',
+    center: [-73.987501, 40.722216],
+    zoom: 9
   });
 
-  google.maps.event.addListener(self.map, "tilesloaded", function(){
-    const iframe = document.querySelector('iframe');
-    iframe.setAttribute('title', 'Google Maps');
-    addMarkersToMap();
-  });  
+  map.on('load', () => {
+    addMarkersToMap(map);
+  });
 }

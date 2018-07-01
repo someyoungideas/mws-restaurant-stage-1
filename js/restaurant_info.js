@@ -2,11 +2,13 @@ let restaurant;
 var map;
 
 document.addEventListener('DOMContentLoaded', (event) => {
+  registerServiceWorker();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
       fillBreadcrumb();
+      setupMap();
       window.addEventListener('online',  handleConnectivityStatus);
       window.addEventListener('offline', handleConnectivityStatus);
     }
@@ -14,20 +16,54 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /**
- * Initialize Google map, called from HTML.
+ * Initialize mapbox map
  */
-window.initMap = () => {
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 16,
-    center: self.restaurant.latlng,
-    scrollwheel: false
+setupMap = (restaurant = self.restaurant) => {
+  if (!restaurant)
+    return;
+  
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic29tZXlvdW5naWRlYXMiLCJhIjoiY2pqMng2MWNpMTJkdTNqbndwbHZiZWQzcSJ9.HEIqaHAJmmakTeGbr6OK4A';
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v10',
+    center: [restaurant.latlng.lng, restaurant.latlng.lat],
+    zoom: 9
   });
 
-  google.maps.event.addListener(self.map, "tilesloaded", function(){
-    const iframe = document.querySelector('iframe');
-    iframe.setAttribute('title', 'Google Maps');
-    DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-  });  
+  map.on('load', () => {
+    addMarkerToMap(map);
+  });
+}
+
+/**
+ * Add markers for current restaurants to the map.
+ */
+addMarkerToMap = (map) => {
+  const geoJSON = {
+    type: 'FeatureCollection',
+    features: [DBHelper.geoJsonRestaurantPoint(self.restaurant)]
+  };
+
+  geoJSON.features.forEach(function(marker) {
+
+    // create a HTML element for each feature
+    var el = document.createElement('div');
+    el.className = 'marker';
+
+    // make a marker for each feature and add to the map
+    new mapboxgl.Marker(el)
+    .setLngLat(marker.geometry.coordinates)
+    .addTo(map);
+  });
+}
+
+/**
+ * Registers service worker
+ */
+registerServiceWorker = function() {
+  if ('serviceWorker' in navigator === false) return;
+
+  navigator.serviceWorker.register('/sw.js').catch(console.error);
 }
 
 /**
@@ -66,7 +102,7 @@ fetchRestaurantFromURL = (callback) => {
     callback(error, null);
   } else {
     DBHelper.fetchRestaurantById(id, (error, restaurant) => {
-      self.restaurant = restaurant;
+      self.restaurant = restaurant;      
       if (!restaurant) {
         console.error(error);
         return;
@@ -93,6 +129,9 @@ setupFavoriteButton = (favoriteButton, restaurant) => {
   favoriteButton.addEventListener('click', _ => {
     restaurant.is_favorite = favoriteButton.getAttribute('data-favorite') === 'true' ? false : true;
     DBHelper.updateRestaurant(restaurant, (error, updatedRestaurant) => {
+      if (error)
+        return console.error(error);
+
       favoriteButton.setAttribute('data-favorite', updatedRestaurant.is_favorite)
     });
   });
@@ -150,7 +189,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   const addReviewButton = document.createElement('button');
   title.innerHTML = 'Reviews';
   addReviewButton.innerHTML = 'Add Review';

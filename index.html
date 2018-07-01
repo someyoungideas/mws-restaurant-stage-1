@@ -73,6 +73,8 @@
   </style>
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="stylesheet" href="build/css/styles.css">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
 <body>
@@ -84,7 +86,7 @@
 
   <main id="maincontent">
     <section id="map-container">
-      <div id="map" role="presentation" aria-label="Google Map" tabindex="-1"></div>
+      <div id="map" role="presentation" aria-label="Mapbox Map" tabindex="-1"></div>
     </section>
     <section>
       <div class="filter-options">
@@ -105,9 +107,7 @@
   <script type="application/javascript" charset="utf-8" src="build/js/vendor.js"></script>
   <script type="application/javascript" charset="utf-8" src="build/js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="build/js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCChce1iJSTe7mxEmN-OG9CpH1bxWXs-SI&libraries=places&callback=initMap"></script>
-
-
+  </script>
 
   <footer id="footer">
     Copyright (c) 2017 <a href="/" tabindex="-1"><strong>Restaurant Reviews</strong></a> All Rights Reserved.

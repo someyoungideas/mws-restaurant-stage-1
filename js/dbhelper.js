@@ -315,6 +315,24 @@ class DBHelper {
   }
 
   /**
+   * Geo JSON for a restaurant.
+   */
+  static geoJsonRestaurantPoint(restaurant) {
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [restaurant.latlng.lng, restaurant.latlng.lat]
+      },
+      properties: {
+        title: 'Mapbox',
+        description: restaurant.name
+      }
+    };
+  }
+
+
+  /**
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {
