@@ -5,7 +5,7 @@ self.addEventListener('fetch', function(event) {
     caches.match(event.request)
       .then(function(response) {
         if (response)
-          return response;
+          return response; 
       
         return caches.open(cache).then(function(cache) {
           const fetchRequest = event.request.clone();
@@ -19,8 +19,6 @@ self.addEventListener('fetch', function(event) {
 
             if (url.hostname === location.hostname)
               cache.put(event.request, responseToCache);
-
-            console.log(url.port);
 
             return response;
           });

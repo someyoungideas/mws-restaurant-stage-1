@@ -26,7 +26,7 @@ class DBHelper {
   }
 
   static openDatabase() {
-    return idb.open('restaurantreviews', 2, upgradeDb => {
+    return idb.open('restaurantreviews', 1, upgradeDb => {
       const reviews = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
 
       reviews.createIndex('restaurant_id', 'restaurant_id');
