@@ -159,18 +159,20 @@ class DBHelper {
    * Fetch a review by its ID.
    */
   static fetchReviewsByRestaurantId(id, callback) {
-    DBHelper.fetchReviews((error, reviews) => {
-      if (error)
-        callback(error, null);
-      else {
-        const restaurantReviews = reviews.filter(r => r.restaurant_id == id);
-        if (restaurantReviews) {
-          callback(null, restaurantReviews);
-        } else {
-          callback('Reviews for restaurant does not exist', null);
-        }
-      }
-    });
+    const request = new Request(`${DBHelper.REVIEWS_DATABASE_URL}/?restaurant_id=${id}`);
+
+    return DBHelper.getReviews().then(reviews => {
+      return fetch(request).then(r => r.json())
+        .then(serverReviews => {
+          return DBHelper.updateReviews(serverReviews);
+        })
+        .catch(err => {
+          console.error(err);
+          return reviews;
+        });
+    }).then(reviews => {
+      return callback(null, reviews);
+    }).catch(e => callback(e, null));
   }
 
   /**
@@ -286,7 +288,7 @@ class DBHelper {
     const request = new Request(`${DBHelper.REVIEWS_DATABASE_URL}`);
     const init = {
       method: 'POST',
-      body: review,
+      body: JSON.stringify(review),
       headers:{
         'Content-Type': 'application/json'
       }
